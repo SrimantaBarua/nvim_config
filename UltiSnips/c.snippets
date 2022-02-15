@@ -1,0 +1,23 @@
+snippet hdr "header guards" b
+#ifndef ${1:`!p
+import os
+final_path = os.path.basename(path)
+abspath = os.path.abspath(path)
+dirname = os.path.dirname(abspath)
+dirparts = dirname.split(os.path.sep)
+done = False
+for numparts in range(len(dirparts), 0, -1):
+	if done:
+		break
+	dirpath = os.path.sep.join(dirparts[:numparts])
+	for entry in os.listdir(dirpath):
+		if entry in ['.git', '.hg']:
+			final_path = os.path.join(os.path.sep.join(dirparts[numparts - 1:]), final_path)
+			done = True
+			break
+final_path = final_path.upper()
+snip.rv = '__' + final_path.replace('/', '_').replace('-', '_').replace('.', '_') + '__'`}
+#define $1
+$0
+#endif  // $1
+endsnippet
