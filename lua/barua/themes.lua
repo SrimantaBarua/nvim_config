@@ -1,15 +1,17 @@
 -- My custom color scheme(s). Note that this only works for terminals with 'termguicolors' set.
 -- Obviously, I also assume that this is only going to be used with neovim.
 
-local nvim = require('util.nvim')
+local M = {}
+
+local nvim = require('barua.nvim')
 
 -- Set a colors and attributes for a highlighting group.
 local function highlight(group, guifg, guibg, guisp, attrs)
   -- Build up a vim command to set a highlight with the components which are non-nil
   local command = "highlight " .. group
-  if guifg then command = command .. " guifg=#" .. guifg else command = command .. " guifg=NONE" end
-  if guibg then command = command .. " guibg=#" .. guibg else command = command .. " guibg=NONE" end
-  if guisp then command = command .. " guisp=#" .. guisp else command = command .. " guisp=NONE" end
+  if guifg then command = command .. " guifg=" .. guifg else command = command .. " guifg=NONE" end
+  if guibg then command = command .. " guibg=" .. guibg else command = command .. " guibg=NONE" end
+  if guisp then command = command .. " guisp=" .. guisp else command = command .. " guisp=NONE" end
   if attrs then command = command .. " gui=" .. attrs else command = command .. " gui=NONE" end
   -- Run the vim command to set the highlight
   nvim.command(command)
@@ -17,24 +19,24 @@ end
 
 -- Apply the basic terminal colors for the theme
 local function apply_theme_terminal_colors(theme)
-  nvim.terminal_color_0 = "#" .. theme.term0
-  nvim.terminal_color_1 = "#" .. theme.term1
-  nvim.terminal_color_2 = "#" .. theme.term2
-  nvim.terminal_color_3 = "#" .. theme.term3
-  nvim.terminal_color_4 = "#" .. theme.term4
-  nvim.terminal_color_5 = "#" .. theme.term5
-  nvim.terminal_color_6 = "#" .. theme.term6
-  nvim.terminal_color_7 = "#" .. theme.term7
-  nvim.terminal_color_8 = "#" .. theme.term8
-  nvim.terminal_color_9 = "#" .. theme.term9
-  nvim.terminal_color_10 = "#" .. theme.term10
-  nvim.terminal_color_11 = "#" .. theme.term11
-  nvim.terminal_color_12 = "#" .. theme.term12
-  nvim.terminal_color_13 = "#" .. theme.term13
-  nvim.terminal_color_14 = "#" .. theme.term14
-  nvim.terminal_color_15 = "#" .. theme.term15
-  nvim.terminal_color_background = "#" .. theme.bg
-  nvim.terminal_color_foreground = "#" .. theme.fg
+  nvim.terminal_color_0 = theme.term0
+  nvim.terminal_color_1 = theme.term1
+  nvim.terminal_color_2 = theme.term2
+  nvim.terminal_color_3 = theme.term3
+  nvim.terminal_color_4 = theme.term4
+  nvim.terminal_color_5 = theme.term5
+  nvim.terminal_color_6 = theme.term6
+  nvim.terminal_color_7 = theme.term7
+  nvim.terminal_color_8 = theme.term8
+  nvim.terminal_color_9 = theme.term9
+  nvim.terminal_color_10 = theme.term10
+  nvim.terminal_color_11 = theme.term11
+  nvim.terminal_color_12 = theme.term12
+  nvim.terminal_color_13 = theme.term13
+  nvim.terminal_color_14 = theme.term14
+  nvim.terminal_color_15 = theme.term15
+  nvim.terminal_color_background = theme.bg
+  nvim.terminal_color_foreground = theme.fg
 end
 
 -- Apply colors for the theme "theme"
@@ -309,45 +311,45 @@ local themes = {}
 
 -- Set up the basic 16 terminal colors for each theme
 themes["black"] = {
-  term0  = "0F1419",  -- Normal Black
+  term0  = "#0F1419",  -- Normal Black
   -- term0  = "000000",  -- Normal Black
-  term1  = "F07178",  -- Normal Red
-  term2  = "B8CC52",  -- Normal Green
-  term3  = "F29718",  -- Normal Yellow
-  term4  = "36A3D9",  -- Normal Blue
-  term5  = "FFEE99",  -- Normal Magenta
-  term6  = "95E6CB",  -- Normal Cyan
-  term7  = "A5A2A2",  -- Normal White (light grey)
-  term8  = "3E4B59",  -- Bright Black (dark grey)
-  term9  = "FF3333",  -- Bright Red
-  term10 = "B8CC52",  -- Bright Green
-  term11 = "F29718",  -- Bright Yellow
-  term12 = "36A3D9",  -- Bright Blue
-  term13 = "FFEE99",  -- Bright Magenta
-  term14 = "95E6CB",  -- Bright Cyan
-  term15 = "FFFFFF",  -- Bright White
+  term1  = "#F07178",  -- Normal Red
+  term2  = "#B8CC52",  -- Normal Green
+  term3  = "#F29718",  -- Normal Yellow
+  term4  = "#36A3D9",  -- Normal Blue
+  term5  = "#FFEE99",  -- Normal Magenta
+  term6  = "#95E6CB",  -- Normal Cyan
+  term7  = "#A5A2A2",  -- Normal White (light grey)
+  term8  = "#3E4B59",  -- Bright Black (dark grey)
+  term9  = "#FF3333",  -- Bright Red
+  term10 = "#B8CC52",  -- Bright Green
+  term11 = "#F29718",  -- Bright Yellow
+  term12 = "#36A3D9",  -- Bright Blue
+  term13 = "#FFEE99",  -- Bright Magenta
+  term14 = "#95E6CB",  -- Bright Cyan
+  term15 = "#FFFFFF",  -- Bright White
 }
 
 -- Set up logical colors for each theme (maybe using terminal colors)
 themes["black"]["bg"]        = themes["black"]["term0"]  -- Normal background color
-themes["black"]["fg"]        = "E6E1Cf"                  -- Normal foreground color
+themes["black"]["fg"]        = "#E6E1CF"                  -- Normal foreground color
 themes["black"]["fg_idle"]   = themes["black"]["term8"]  -- Foreground color for idle pane
 themes["black"]["accent"]    = themes["black"]["term3"]
-themes["black"]["comment"]   = "5C6773"
+themes["black"]["comment"]   = "#5C6773"
 themes["black"]["constant"]  = themes["black"]["term5"]
 themes["black"]["string"]    = themes["black"]["term2"]
 themes["black"]["regexp"]    = themes["black"]["term6"]  -- Regular expressions
-themes["black"]["func_call"] = "FFB454"                  -- Function calls
-themes["black"]["func_defn"] = "FFB454"                  -- Function definitions
-themes["black"]["operator"]  = "E7C547"
-themes["black"]["keyword"]   = "FF7733"
+themes["black"]["func_call"] = "#FFB454"                  -- Function calls
+themes["black"]["func_defn"] = "#FFB454"                  -- Function definitions
+themes["black"]["operator"]  = "#E7C547"
+themes["black"]["keyword"]   = "#FF7733"
 themes["black"]["error"]     = themes["black"]["term9"]
-themes["black"]["selection"] = "253340"                  -- Text selection
-themes["black"]["guide"]     = "2D3640"                  -- Stuff like line numbers in the gutter
-themes["black"]["line"]      = "22272B"                  -- Stuff like cursorline/cursorcolumn
+themes["black"]["selection"] = "#253340"                  -- Text selection
+themes["black"]["guide"]     = "#2D3640"                  -- Stuff like line numbers in the gutter
+themes["black"]["line"]      = "#22272B"                  -- Stuff like cursorline/cursorcolumn
 themes["black"]["tag"]       = themes["black"]["term4"]  -- Variable names, types, and stuff?
-themes["black"]["panel"]     = "14191F"                  -- Stuff like the background of the status bar or folds
-themes["black"]["special"]   = "E6B673"                  -- Stuff like preprocessor things
+themes["black"]["panel"]     = "#14191F"                  -- Stuff like the background of the status bar or folds
+themes["black"]["special"]   = "#E6B673"                  -- Stuff like preprocessor things
 themes["black"]["markup"]    = themes["black"]["term1"]
 
 -- let s:palette.bg        = {'dark': "#0F1419",  'light': "#FAFAFA",  'mirage': "#212733"}
@@ -370,12 +372,11 @@ themes["black"]["markup"]    = themes["black"]["term1"]
 -- let s:palette.fg        = {'dark': "#E6E1CF",  'light': "#5C6773",  'mirage': "#D9D7CE"}
 -- let s:palette.fg_idle   = {'dark': "#3E4B59",  'light': "#828C99",  'mirage': "#607080"}
 
-vim.api.nvim_command("syntax enable")
-vim.api.nvim_command("highlight clear")
-vim.api.nvim_command("syntax reset")
+nvim.command("syntax enable")
+nvim.command("highlight clear")
 
-return {
-  set_theme = function(theme_name)
-    apply_theme(themes[theme_name])
-  end
-}
+M.set_theme = function(theme_name)
+  apply_theme(themes[theme_name])
+end
+
+return M

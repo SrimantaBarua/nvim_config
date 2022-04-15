@@ -1,9 +1,8 @@
----------------- INCLUDE FILES ----------------
+-- Configure default vim options
+require("barua.settings")
 
-require('config.plugins').configure()
-require('config.keymap').general_keymap()
-require('config.settings').configure()
+-- Install packages
+require("packages")
 
----------------- THEME ----------------
-
-require('colors.barua').set_theme('black')
+-- Set color scheme
+require("barua.themes").set_theme("black")
