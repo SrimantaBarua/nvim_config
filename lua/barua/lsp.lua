@@ -2,24 +2,27 @@ local lsp = {}
 
 -- Configure language servers I want to use
 function lsp.configure()
+  local capabilities = require("barua.completion").capabilities()
+
   local lspconfig = require("lspconfig")
 
   -- Bash - `npm i -g bash-language-server`
-  lspconfig.bashls.setup{}
+  lspconfig.bashls.setup{ capabilities = capabilities }
 
   -- Clangd for C++ - install via package manager
-  lspconfig.clangd.setup{}
+  lspconfig.clangd.setup{ capabilities = capabilities }
 
   -- CMake - `pip install cmake-language-server`
   lspconfig.cmake.setup{
-    buildDirectory = "build"
+    buildDirectory = "build",
+    capabilities = capabilities
   }
 
   -- Pylsp for python - `pip install python-lsp-server`
-  lspconfig.pylsp.setup{}
+  lspconfig.pylsp.setup{ capabilities = capabilities }
 
   -- rust_analyzer for Rust - install via package manager
-  lspconfig.rust_analyzer.setup{}
+  lspconfig.rust_analyzer.setup{ capabilities = capabilities }
 
   -- Lua. `brew install lua-language-server` on Mac. On linux, I'll have to do this -
   -- https://github.com/sumneko/lua-language-server/wiki/Build-and-Run
@@ -36,7 +39,7 @@ function lsp.configure()
         },
         diagnostics = {
           -- Get the language server to recognize the `vim` global
-          globals = {'vim'},
+          globals = {'vim' },
         },
         workspace = {
           -- Make the server aware of Neovim runtime files
@@ -48,10 +51,11 @@ function lsp.configure()
         },
       },
     },
+    capabilities = capabilities,
   }
 
   -- tsserver for Typescript
-  lspconfig.tsserver.setup{}
+  lspconfig.tsserver.setup{ capabilities = capabilities }
 end
 
 return lsp

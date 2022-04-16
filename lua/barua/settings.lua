@@ -1,8 +1,11 @@
 local opt = vim.opt
 
 -- Completion
-opt.pumblend = 10              -- Translucent popup menu
+-- opt.pumblend = 10              -- Translucent popup menu
 opt.wildmode = "longest:full"  -- Complete the to longest common match
+
+-- This option is used by the "omnifunc" completion stuff
+opt.completeopt = "menu,menuone"
 
 -- Mouse
 opt.mouse = 'n'                -- Enable mouse support in normal mode

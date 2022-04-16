@@ -68,7 +68,7 @@ local function apply_theme(theme)
   highlight("VertSplit",       theme.bg,         nil,            nil,            nil        )  -- the column separating vertically split windows
   highlight("Folded",          theme.fg_idle,    theme.panel,    nil,            nil        )  -- line used for closed folds
   highlight("FoldColumn",      nil,              theme.panel,    nil,            nil        )  -- 'foldcolumn'
-  highlight("SignColumn",      nil,              theme.panel,    nil,            nil        )  -- column where |signs| are displayed
+  highlight("SignColumn",      nil,              theme.background, nil,            nil        )  -- column where |signs| are displayed
   -- highlight("IncSearch",    nil, nil, nil, nil )  --  'incsearch' highlighting; also used for the text replaced with ":s///c"
   -- highlight("Substitute",   nil, nil, nil, nil )  --  |:substitute| replacement text highlighting
   highlight("LineNr",          theme.guide,     nil,             nil,            nil        )  -- Line number for ":number" and ":#" commands, and when 'number' or 'relativenumber' option is set.
