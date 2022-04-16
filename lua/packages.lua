@@ -41,9 +41,14 @@ return require("packer").startup(function(use)
   }
 
   -- Telescope for fuzzy finding
+  use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
   use {
     -- External dependencies - ripgrep
     'nvim-telescope/telescope.nvim',
-    requires = { 'nvim-lua/plenary.nvim' }
+    requires = {
+      'nvim-lua/plenary.nvim',
+      'nvim-telescope/telescope-fzf-native.nvim'
+    },
+    config = require("barua.telescope").configure
   }
 end)

@@ -2,27 +2,32 @@ local lsp = {}
 
 -- Configure language servers I want to use
 function lsp.configure()
-  local capabilities = require("barua.completion").capabilities()
-
   local lspconfig = require("lspconfig")
 
+  local on_attach = function(_, bufnr)
+    require("barua.keybindings").setup_lsp(bufnr)
+  end
+
+  local capabilities = require("barua.completion").capabilities()
+
   -- Bash - `npm i -g bash-language-server`
-  lspconfig.bashls.setup{ capabilities = capabilities }
+  lspconfig.bashls.setup{ capabilities = capabilities, on_attach = on_attach }
 
   -- Clangd for C++ - install via package manager
-  lspconfig.clangd.setup{ capabilities = capabilities }
+  lspconfig.clangd.setup{ capabilities = capabilities, on_attach = on_attach }
 
   -- CMake - `pip install cmake-language-server`
   lspconfig.cmake.setup{
     buildDirectory = "build",
-    capabilities = capabilities
+    capabilities = capabilities,
+    on_attach = on_attach
   }
 
   -- Pylsp for python - `pip install python-lsp-server`
-  lspconfig.pylsp.setup{ capabilities = capabilities }
+  lspconfig.pylsp.setup{ capabilities = capabilities, on_attach = on_attach }
 
   -- rust_analyzer for Rust - install via package manager
-  lspconfig.rust_analyzer.setup{ capabilities = capabilities }
+  lspconfig.rust_analyzer.setup{ capabilities = capabilities, on_attach = on_attach }
 
   -- Lua. `brew install lua-language-server` on Mac. On linux, I'll have to do this -
   -- https://github.com/sumneko/lua-language-server/wiki/Build-and-Run
@@ -52,10 +57,11 @@ function lsp.configure()
       },
     },
     capabilities = capabilities,
+    on_attach = on_attach,
   }
 
   -- tsserver for Typescript
-  lspconfig.tsserver.setup{ capabilities = capabilities }
+  lspconfig.tsserver.setup{ capabilities = capabilities, on_attach = on_attach }
 end
 
 return lsp
