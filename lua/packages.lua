@@ -55,4 +55,7 @@ return require("packer").startup(function(use)
     },
     config = require("barua.telescope").configure
   }
+
+  -- Insert icons into stuff
+  use 'kyazdani42/nvim-web-devicons'
 end)
