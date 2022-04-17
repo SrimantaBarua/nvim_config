@@ -26,7 +26,11 @@ return require("packer").startup(function(use)
   -- https://github.com/hrsh7th/nvim-cmp/
   use {
     'hrsh7th/nvim-cmp',
-    requires = { 'hrsh7th/cmp-nvim-lsp', 'hrsh7th/cmp-path' },
+    requires = {
+      'hrsh7th/cmp-nvim-lsp',
+      'hrsh7th/cmp-path',
+      'quangnguyen30192/cmp-nvim-ultisnips'
+    },
     config = require("barua.completion").configure
   }
 

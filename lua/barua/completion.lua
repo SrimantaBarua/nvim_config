@@ -9,6 +9,7 @@ end
 -- Configure completion
 function completion.configure()
   local cmp = require('cmp')
+  local cmp_ultisnips_mappings = require("cmp_nvim_ultisnips.mappings")
 
   local kind_map = {
     Text = '',
@@ -50,13 +51,20 @@ function completion.configure()
       ['<C-f>'] = cmp.mapping.scroll_docs(1),
       ['<C-Space>'] = cmp.mapping.complete(),
       ['<C-e>'] = cmp.mapping.abort(),
-      ['<Tab>'] = cmp.mapping.confirm({ select = true })
+      ['<Tab>'] = cmp.mapping(
+        function(fallback) cmp_ultisnips_mappings.expand_or_jump_forwards(fallback) end,
+        { "i", "s" }
+      ),
+      ['<S-Tab>'] = cmp.mapping(
+        function(fallback) cmp_ultisnips_mappings.jump_backwards(fallback) end,
+        { "i", "s" }
+      )
     }),
     -- Completion sources in order of preferences in "groups"
     sources = cmp.config.sources(
       { -- group 1
-        { name = 'nvim_lsp' },
         { name = 'ultisnips' },
+        { name = 'nvim_lsp' },
         { name = 'path' }
       },
       { -- group 2
