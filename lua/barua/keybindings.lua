@@ -31,11 +31,16 @@ function keys.setup_default()
     vim.api.nvim_set_keymap(mode, lhs, rhs, options)
   end
 
+  -- Telescope
   map('n', '<Space>ff', ':lua require("telescope.builtin").find_files()<cr>')
   map('n', '<Space>fg', ':lua require("telescope.builtin").live_grep()<cr>')
   map('n', '<Space>fb', ':lua require("telescope.builtin").buffers()<cr>')
   map('n', '<Space>fh', ':lua require("telescope.builtin").help_tags()<cr>')
   map('n', '<Space>fm', ':lua require("telescope.builtin").man_pages()<cr>')
+
+  -- Toggle line numbers
+  map('n', '<Space>nn', ':set number!<cr>')
+  map('n', '<Space>nr', ':set relativenumber!<cr>')
 end
 
 return keys
