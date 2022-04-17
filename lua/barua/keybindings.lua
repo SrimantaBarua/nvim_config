@@ -37,6 +37,7 @@ function keys.setup_default()
   map('n', '<Space>fb', ':lua require("telescope.builtin").buffers()<cr>')
   map('n', '<Space>fh', ':lua require("telescope.builtin").help_tags()<cr>')
   map('n', '<Space>fm', ':lua require("telescope.builtin").man_pages()<cr>')
+  map('n', '<Space>ts', ':Telescope symbols<cr>')
 
   -- Toggle line numbers
   map('n', '<Space>nn', ':set number!<cr>')

@@ -51,7 +51,8 @@ return require("packer").startup(function(use)
     'nvim-telescope/telescope.nvim',
     requires = {
       'nvim-lua/plenary.nvim',
-      'nvim-telescope/telescope-fzf-native.nvim'
+      'nvim-telescope/telescope-fzf-native.nvim',
+      'nvim-telescope/telescope-symbols.nvim'
     },
     config = require("barua.telescope").configure
   }
