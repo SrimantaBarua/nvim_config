@@ -45,14 +45,18 @@ function completion.configure()
     },
     -- Keybindings for when completion window is active
     mapping = cmp.mapping.preset.insert({
-      ['<C-p>'] = cmp.mapping.select_prev_item(),
-      ['<C-n>'] = cmp.mapping.select_next_item(),
-      ['<C-b>'] = cmp.mapping.scroll_docs(-1),
-      ['<C-f>'] = cmp.mapping.scroll_docs(1),
+      --['<C-p>'] = cmp.mapping.select_prev_item(),
+      --['<C-n>'] = cmp.mapping.select_next_item(),
+      ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+      ['<C-f>'] = cmp.mapping.scroll_docs(4),
+      ['<C-e>'] = cmp.mapping.close(),
+      ['<C-y>'] = cmp.mapping.confirm({
+        behavior = cmp.ConfirmBehavior.Insert,
+        select = true,
+      }),
       ['<C-Space>'] = cmp.mapping.complete(),
-      ['<C-e>'] = cmp.mapping.abort(),
       ['<Tab>'] = cmp.mapping(
-        function(fallback) cmp_ultisnips_mappings.expand_or_jump_forwards(fallback) end,
+        function(_) cmp_ultisnips_mappings.expand_or_jump_forwards(cmp.complete_common_string) end,
         { "i", "s" }
       ),
       ['<S-Tab>'] = cmp.mapping(
@@ -64,11 +68,12 @@ function completion.configure()
     sources = cmp.config.sources(
       { -- group 1
         { name = 'ultisnips' },
+        { name = 'nvim_lua' }, -- Could enable this only for Lua but nvim_lua handles that already
         { name = 'nvim_lsp' },
         { name = 'path' }
       },
       { -- group 2
-        { name = 'buffer' }
+        { name = 'buffer', keyword_length = 3 }
       }
     ),
     -- Return custom "kind" - the stuff that appears to the side

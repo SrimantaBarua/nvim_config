@@ -5,7 +5,7 @@ vim.g.mapleader = ","
 
 -- Completion
 -- opt.pumblend = 10              -- Translucent popup menu
-opt.wildmode = "longest:full"  -- Complete the to longest common match
+-- opt.wildmode = "longest:full"  -- Complete the to longest common match
 
 -- This option is used by the "omnifunc" completion stuff
 opt.completeopt = "menu,menuone"
@@ -52,5 +52,5 @@ opt.hidden = true              -- Enable background buffers (do not unload invis
 opt.joinspaces = false         -- No double spaces with join with '.' etc
 
 -- opt.list = true                -- Show some invisible characters
--- opt.cursorline = true          -- Highlight the current cursor line
--- opt.colorcolumn = '100'        -- Have a vertical line on column 100
+opt.cursorline = true          -- Highlight the current cursor line
+opt.colorcolumn = '100'        -- Have a vertical line on column 100

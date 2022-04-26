@@ -1,23 +1,15 @@
 -- Use packer for package management
 -- https://github.com/wbthomason/packer.nvim
 
-return require("packer").startup(function(use)
+return require('packer').startup(function(use)
   -- Use packer to manage itself
   use 'wbthomason/packer.nvim'
 
   -- Install the treesitter plugin and update grammars post-install
-  use {
-    'nvim-treesitter/nvim-treesitter',
-    run = ':TSUpdate',
-    config = require("barua.tree-sitter").configure
-  }
+  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
 
   -- Install nvim-lspconfig for easy configuration of language servers
-  use {
-    'neovim/nvim-lspconfig',
-    requires = { 'hrsh7th/cmp-nvim-lsp' },
-    config = require("barua.lsp").configure
-  }
+  use { 'neovim/nvim-lspconfig', requires = { 'hrsh7th/cmp-nvim-lsp' }}
 
   -- Ultisnips for snippets
   use 'SirVer/ultisnips'
@@ -27,22 +19,16 @@ return require("packer").startup(function(use)
   use {
     'hrsh7th/nvim-cmp',
     requires = {
-      'hrsh7th/cmp-nvim-lsp',
+      'hrsh7th/cmp-nvim-lua', -- for Neovim Lua API
+      'hrsh7th/cmp-nvim-lsp', -- for completion from LSP
       'hrsh7th/cmp-path',
+      'hrsh7th/cmp-buffer',
       'quangnguyen30192/cmp-nvim-ultisnips'
     },
-    config = require("barua.completion").configure
   }
 
   -- norcalli/nvim-colorizer.lua for colors in buffers - helps when building themes
-  use {
-    'norcalli/nvim-colorizer.lua',
-    config = function()
-      require('colorizer').setup {
-        'css', 'lua'
-      }
-    end
-  }
+  use 'norcalli/nvim-colorizer.lua'
 
   -- Telescope for fuzzy finding
   use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
@@ -54,7 +40,6 @@ return require("packer").startup(function(use)
       'nvim-telescope/telescope-fzf-native.nvim',
       'nvim-telescope/telescope-symbols.nvim'
     },
-    config = require("barua.telescope").configure
   }
 
   -- Insert icons into stuff
