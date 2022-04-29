@@ -6,7 +6,7 @@
 local nvim = require('barua.nvim')
 
 -- Set up ease-of-use stuff
-local highlight = { _mt = {} }
+local hl = { _mt = {} }
 
 -- This function sets a new highlight, and also creates an entry for easy reference. `value` is
 -- expected to be a table with the keys -
@@ -16,7 +16,7 @@ local highlight = { _mt = {} }
 --   sp:    "#rrggbb",
 --   attrs: { .. values from `attr-list` },
 -- }
-highlight._mt.__newindex = function (table, key, value)
+hl._mt.__newindex = function (table, key, value)
   -- Translate to vim terms
   local fg = value.fg or "NONE"
   local bg = value.bg or "NONE"
@@ -42,7 +42,113 @@ highlight._mt.__newindex = function (table, key, value)
   rawset(table, key, value)
 end
 
-setmetatable(highlight, highlight._mt)
+setmetatable(hl, hl._mt)
+
+-- Reset everything!
+nvim.command("syntax enable")
+nvim.command("highlight clear")
+
+-- Color palette
+local black      = "#0f1419"
+local red_0      = "#f07178"
+local red_1      = "#ef2333"
+local green_0    = "#b8cc52"
+local green_1    = "#b0ec23"
+local yellow_0   = "#e7c547"
+local yellow_1   = "#f2d018"
+local yellow_2   = "#ffee99"
+local orange_0   = "#ff7733"
+local orange_1   = "#e6b673"
+local orange_2   = "#ffb454"
+local blue_0     = "#36a3d9"
+local blue_1     = "#59c3ff"
+local magenta_0  = "#aa3198"
+local magenta_1  = "#e774da"
+local cyan_0     = "#95e6cb"
+local cyan_1     = "#a5f6eb"
+local gray_0     = "#14191f"
+local gray_1     = "#151a1e"
+local gray_2     = "#253340"
+local gray_3     = "#2d3640"
+local gray_4     = "#3e4b59"
+local gray_5     = "#d9d8d7"
+local foreground = "#e6e1cf"
+local white      = "#ffffff"
+
+-- Apply the basic terminal colors for the theme
+nvim.terminal_color_0          = black
+nvim.terminal_color_1          = red_0
+nvim.terminal_color_2          = green_0
+nvim.terminal_color_3          = yellow_0
+nvim.terminal_color_4          = blue_0
+nvim.terminal_color_5          = magenta_0
+nvim.terminal_color_6          = cyan_0
+nvim.terminal_color_7          = gray_4
+nvim.terminal_color_8          = gray_2
+nvim.terminal_color_9          = red_1
+nvim.terminal_color_10         = green_1
+nvim.terminal_color_11         = yellow_1
+nvim.terminal_color_12         = blue_1
+nvim.terminal_color_13         = magenta_1
+nvim.terminal_color_14         = cyan_1
+nvim.terminal_color_15         = white
+nvim.terminal_color_background = black
+nvim.terminal_color_foreground = foreground
+
+-- Apply basic vim highlights
+hl.Normal       = { fg = foreground, bg = black }
+hl.Bold         = { attrs = { "bold" } }
+hl.Italic       = { attrs = { "italic" } }
+hl.Underlined   = { attrs = { "underline" } }
+hl.ColorColumn  = { bg = gray_0 }
+hl.CursorColumn = hl.ColorColumn
+hl.CursorLine   = hl.CursorColumn
+hl.DiffAdd      = { fg = green_0, bg = gray_0 }
+hl.DiffChange   = { fg = yellow_1, bg = gray_0 }
+hl.DiffDelete   = { fg = red_0, bg = gray_0 }
+hl.DiffText     = { fg = foreground, bg = gray_0 }
+hl.ErrorMsg     = { fg = foreground, bg = red_1 }
+hl.VertSplit    = { fg = hl.ColorColumn.bg }
+hl.Folded       = { fg = gray_4, bg = gray_1 }
+hl.FoldColumn   = { bg = gray_1 }
+hl.SignColumn   = { bg = black }
+hl.LineNr       = { fg = gray_2 }
+hl.CursorLineNr = { fg = orange_2, bg = hl.CursorLine.bg, attrs = { "bold" } }
+hl.ModeMsg      = { fg = green_0 }
+hl.MoreMsg      = { fg = green_0 }
+hl.NonText      = { fg = gray_4 }
+hl.Pmenu        = { fg = foreground, bg = gray_2 }
+hl.PmenuSel     = { fg = black, bg = cyan_1 }
+hl.PmenuSbar    = { bg = gray_1 }
+hl.PmenuThumb   = { bg = gray_5 }
+hl.Search       = { fg = black, bg = yellow_2 }
+hl.SpecialKey   = { fg = gray_4 }
+hl.SpellBad     = { sp = red_1, attrs = { "undercurl" } }
+hl.SpellCap     = { sp = yellow_2, attrs = { "undercurl" } }
+hl.StatusLine   = { fg = foreground, bg = gray_0 }
+hl.StatusLineNC = { fg = gray_5, bg = gray_0 }
+hl.TabLine      = { fg = foreground, bg = gray_0 }
+hl.Title        = { fg = orange_0 }
+hl.Visual       = { bg = gray_2 }
+hl.VisualNC     = { bg = gray_0 }
+hl.WarningMsg   = { fg = black, bg = yellow_1 }
+
+-- Standard syntax elements
+hl.Comment      = { fg = gray_3 }
+hl.Constant     = { fg = yellow_2 }
+hl.String       = { fg = green_0 }
+hl.Character    = hl.String
+hl.Number       = hl.Constant
+hl.Function     = { fg = orange_2 }
+hl.Identifier   = { fg = blue_0 }
+hl.Statement    = { fg = orange_0 }
+hl.Operator     = { fg = yellow_0 }
+hl.PreProc      = { fg = orange_1 }
+hl.Type         = hl.Identifier
+hl.Structure    = hl.PreProc
+hl.Special      = hl.PreProc
+hl.Error        = hl.ErrorMsg
+hl.Todo         = { fg = red_0 }
 
 -- Set a colors and attributes for a highlighting group.
 -- local function highlight(group, guifg, guibg, guisp, attrs)
@@ -344,81 +450,6 @@ setmetatable(highlight, highlight._mt)
 -- exe "hi! GitGutterChangeDelete" .s:fg_function   .s:bg_none        .s:fmt_none
 --
 -- "}}}
-
--- Reset everything!
-nvim.command("syntax enable")
-nvim.command("highlight clear")
-
--- Collection of colors to build out my theme
-local color = {}
-
--- Basic terminal colors
-color.black          = "#0f1419" -- term 0
-color.red            = "#f07178" -- term 1
-color.green          = "#b8cc52" -- term 2
-color.yellow         = "#ffee99" -- term 3
-color.blue           = "#36a3d9" -- term 4
-color.magenta        = "#aa3198" -- term 5
-color.cyan           = "#95e6cb" -- term 6
-color.light_gray     = "#a5a2a2" -- term 7
-color.dark_gray      = "#3e4b59" -- term 8
-color.bright_red     = "#ff3333" -- term 9
-color.bright_green   = "#b0ec32" -- term 10
-color.bright_yellow  = "#f2d018" -- term 11
-color.bright_blue    = "#59c3ff" -- term 12
-color.bright_magenta = "#e774da" -- term 13
-color.bright_cyan    = "#a5f6eb" -- term 14
-color.white          = "#ffffff" -- term 15
-
--- Additional colors
-color.gray_0 = "#233240"
-color.gray_1 = "#222222"
-
--- UI stuff
-color.background      = color.black
-color.foreground      = "#e6e1cf"
-color.foreground_idle = color.dark_gray
-
--- Language-specific stuff
-color.comment         = "#5c6773"
-color.func_call       = "#ffb454"
-color.func_def        = "#ffb454"
-color.operator        = "#e7c547"
-color.keyword         = "#ff7733"
-
--- Apply the basic terminal colors for the theme
-nvim.terminal_color_0          = color.black
-nvim.terminal_color_1          = color.red
-nvim.terminal_color_2          = color.green
-nvim.terminal_color_3          = color.yellow
-nvim.terminal_color_4          = color.blue
-nvim.terminal_color_5          = color.magenta
-nvim.terminal_color_6          = color.cyan
-nvim.terminal_color_7          = color.light_gray
-nvim.terminal_color_8          = color.dark_gray
-nvim.terminal_color_9          = color.bright_red
-nvim.terminal_color_10         = color.bright_green
-nvim.terminal_color_11         = color.bright_yellow
-nvim.terminal_color_12         = color.bright_blue
-nvim.terminal_color_13         = color.bright_magenta
-nvim.terminal_color_14         = color.bright_cyan
-nvim.terminal_color_15         = color.white
-nvim.terminal_color_background = color.background
-nvim.terminal_color_foreground = color.foreground
-
--- Apply basic vim highlights
-highlight.Normal       = { fg = color.foreground, bg = color.background }
-highlight.Bold         = { attrs = { "bold" } }
-highlight.Italic       = { attrs = { "italic" } }
-highlight.Underlined   = { attrs = { "underline" } }
-highlight.ColorColumn  = { bg = color.gray_0 }
-highlight.CursorColumn = highlight.ColorColumn
-highlight.CursorLine   = highlight.CursorColumn
-highlight.ErrorMsg     = { fg = color.foreground, bg = color.error }
-highlight.VertSplit    = { fg = highlight.ColorColumn.bg }
-highlight.Visual       = { bg = color.dark_gray }
-
--- highlight("Normal", color.foreground, color.background)
 
 -- Set up logical colors for each theme (maybe using terminal colors)
 -- themes["black"]["bg"]        = themes["black"]["term0"]  -- Normal background color

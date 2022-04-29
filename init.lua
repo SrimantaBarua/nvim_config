@@ -10,6 +10,6 @@ require('barua.keybindings').setup_default()
 require('barua.theme')
 
 -- Configure norcalli's nvim-colorizer.lua
--- require('colorizer').setup {
-  -- 'css', 'lua'
--- }
+require('colorizer').setup {
+  'css', 'lua'
+}
