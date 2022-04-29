@@ -13,7 +13,7 @@ for _, c in ipairs({ '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b',
   hex_bytes[string.byte(c)] = c
 end
 -- Uppercase characters are mapped to lowercase
-for c in ipairs({ 'A', 'B', 'C', 'D', 'E', 'F' }) do
+for _, c in ipairs({ 'A', 'B', 'C', 'D', 'E', 'F' }) do
   hex_bytes[string.byte(c)] = string.lower(c)
 end
 
@@ -40,16 +40,19 @@ local function highlight_line(bufnr, line, row, start_col, end_col)
       i = i + 1
       local start = start_col + i
       local is_valid = true
+      local hexstr = ""
       -- Check if the next 6 characters are hex
       for _ = 0, 5 do
         if i > end_col or hex_bytes[line:byte(i)] == nil then
           is_valid = false
           break
-        else i = i + 1 end
+        else
+          hexstr = hexstr .. hex_bytes[line:byte(i)]
+          i = i + 1
+        end
       end
       if is_valid then
         -- This is a valid hex str
-        local hexstr = line:sub(i - 6, i - 1)
         local color = color_map[hexstr]
         if color == nil then
           -- This is a new color. Generate a highlight and apply it, and also cache it
@@ -65,7 +68,6 @@ local function highlight_line(bufnr, line, row, start_col, end_col)
 end
 
 function M.colorize_buffer(bufnr)
-  print("HERE")
   bufnr = bufnr or 0
   -- Clear any previous highlights we've set
   M.clear_highlights(bufnr)
@@ -89,6 +91,7 @@ function M.colorize_buffer(bufnr)
 end
 
 function M.clear_highlights(bufnr)
+  bufnr = bufnr or 0
   vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
 end
 
