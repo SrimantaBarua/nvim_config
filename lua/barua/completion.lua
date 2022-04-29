@@ -43,6 +43,7 @@ function completion.configure()
     snippet = {
       expand = function(args) vim.fn['UltiSnips#Anon'](args.body) end
     },
+
     -- Keybindings for when completion window is active
     mapping = cmp.mapping.preset.insert({
       --['<C-p>'] = cmp.mapping.select_prev_item(),
@@ -64,6 +65,7 @@ function completion.configure()
         { "i", "s" }
       )
     }),
+
     -- Completion sources in order of preferences in "groups"
     sources = cmp.config.sources(
       { -- group 1
@@ -76,6 +78,7 @@ function completion.configure()
         { name = 'buffer', keyword_length = 3 }
       }
     ),
+
     -- Return custom "kind" - the stuff that appears to the side
     formatting = {
       format = function(_, vim_item)
@@ -85,6 +88,11 @@ function completion.configure()
         end
         return vim_item
       end
+    },
+
+    -- Let's see how these go
+    experimental = {
+      ghost_text = true,  -- Shows the virtual text that would be inserted. Looks cool!
     }
   })
 end
