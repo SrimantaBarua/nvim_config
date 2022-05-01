@@ -3,6 +3,8 @@ local opt = vim.opt
 -- Set ',' as the leader key
 vim.g.mapleader = ","
 
+opt.laststatus = 3             -- Global status line
+
 -- Completion
 -- opt.pumblend = 10              -- Translucent popup menu
 -- opt.wildmode = "longest:full"  -- Complete the to longest common match
