@@ -56,14 +56,14 @@ function completion.configure()
         select = true,
       }),
       ['<C-Space>'] = cmp.mapping.complete(),
-      ['<Tab>'] = cmp.mapping(
-        function(_) cmp_ultisnips_mappings.expand_or_jump_forwards(cmp.complete_common_string) end,
-        { "i", "s" }
-      ),
-      ['<S-Tab>'] = cmp.mapping(
-        function(fallback) cmp_ultisnips_mappings.jump_backwards(fallback) end,
-        { "i", "s" }
-      )
+      --['<Tab>'] = cmp.mapping(
+        --function(_) cmp_ultisnips_mappings.expand_or_jump_forwards(cmp.complete_common_string) end,
+        --{ "i", "s" }
+      --),
+      --['<S-Tab>'] = cmp.mapping(
+        --function(fallback) cmp_ultisnips_mappings.jump_backwards(fallback) end,
+        --{ "i", "s" }
+      --)
     }),
 
     -- Completion sources in order of preferences in "groups"
