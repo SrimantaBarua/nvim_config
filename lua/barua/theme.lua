@@ -157,7 +157,7 @@ hl.Todo         = { fg = red_0 }
 hl.BaruaPresentH1        = { fg = cyan_0, attrs = { "bold" } }
 hl.BaruaPresentH2        = { fg = magenta_1, attrs = { "bold" } }
 hl.BaruaPresentH3        = { fg = yellow_2, attrs = { "bold" } }
-hl.BaruaPresentCodeBlock = { bg = gray_3 }
+hl.BaruaPresentCodeBlock = { bg = gray_1 }
 
 -- Tree-sitter highlights (TODO)
 --

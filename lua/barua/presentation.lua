@@ -2,12 +2,34 @@ local M = {}
 
 local NAMESPACE = vim.api.nvim_create_namespace("BaruaPresentation")
 
+local ts_utils = require('nvim-treesitter.ts_utils')
+
+local C_QUERY = [[
+(preproc_include) @include
+[(true) (false)] @boolean
+(comment) @comment
+]]
+
+local RUST_QUERY = [[
+]]
+
+local QUERIES = {
+  c = C_QUERY,
+  rust = RUST_QUERY,
+}
+
+-- capture -> highlight
+local TS_HL_GROUP = {
+  include = "TSInclude",
+  boolean = "TSBoolean",
+  comment = "TSComment",
+}
+
 -- Create highlights
 local HL_H1          = "BaruaPresentH1"
-local HL_H2          = "BaruaPresentH2"
-local HL_H3          = "BaruaPresentH3"
-local HL_INLINE_CODE = "BaruaPresentInlineCode"
 local HL_CODE_BLOCK  = "BaruaPresentCodeBlock"
+
+local block_types = { paragraph = 'p', code = 'c', block = 'b' }
 
 -- Slide format -
 -- {
@@ -28,72 +50,121 @@ local HL_CODE_BLOCK  = "BaruaPresentCodeBlock"
 --   }
 -- }
 
-local block_types = { paragraph = 'p', code = 'c', block = 'b' }
+-- Adds a highlight to a range in the buffer.
+local function highlight(bufnr, group, line, col_start, col_end)
+  vim.api.nvim_buf_add_highlight(bufnr, NAMESPACE, group, line, col_start, col_end)
+end
 
-local function render_block(block, level, lines, highlights)
-  table.insert(lines, "")
+-- Draws a paragraph block.
+local function draw_paragraph(bufnr, content, level)
+  local lines = { "" }
   local prefix = string.rep(" ", level)
+  -- TODO: Support inline code
+  for _, line in ipairs(content) do
+    table.insert(lines, prefix .. line)
+  end
+  vim.api.nvim_buf_set_lines(bufnr, -1, -1, true, lines)
+end
+
+-- Draws a code block. Only ASCII code supported for now.
+local function draw_code_block(bufnr, content, level, code_blocks)
+  local lines = { "" }
+  local start_line = vim.api.nvim_buf_line_count(bufnr)
+  local prefix = string.rep(" ", level + 1)
+  -- Calculate max line length of code
+  local max_length = 0
+  for _, line in ipairs(content.code) do
+    max_length = math.max(max_length, #line)
+  end
+  max_length = max_length + 1
+  -- Write lines out padded with spaces
+  for _, line in ipairs(content.code) do
+    table.insert(lines, prefix .. line .. string.rep(" ", max_length - #line))
+  end
+  max_length = max_length + level + 1
+  -- Write those lines to the buffer
+  vim.api.nvim_buf_set_lines(bufnr, -1, -1, true, lines)
+  -- Highlight those lines
+  local end_line = vim.api.nvim_buf_line_count(bufnr)
+  -- Mark code block for future highlighting
+  if code_blocks[content.language] == nil then
+    code_blocks[content.language] = {}
+  end
+  local start_byte = vim.fn.line2byte(start_line)
+  local end_byte = vim.fn.line2byte(end_line)
+  table.insert(code_blocks[content.language], {{ start_line, 0, start_byte, end_line, 0, end_byte }})
+  -- Highlight normally with lighter background
+  for i = start_line, end_line - 1 do
+    highlight(bufnr, HL_CODE_BLOCK, i, level, max_length)
+  end
+end
+
+-- Draws a block in the slide definition.
+local function draw_block(bufnr, block, level, code_blocks)
   if block.type == block_types.paragraph then
-    -- TODO: Support inline code
-    for _, line in ipairs(block.content) do
-      table.insert(lines, prefix .. line)
-    end
+    draw_paragraph(bufnr, block.content, level)
   elseif block.type == block_types.code then
-    -- TODO: Support syntax highlighting
-    -- local language = block.content.language
-    local start_line, max_length = #lines, 0
-    -- Calculate max length
-    for _, line in ipairs(block.content.code) do
-      max_length = math.max(max_length, #line)
-    end
-    max_length = max_length + 1
-    -- Write lines out padded with spaces
-    for _, line in ipairs(block.content.code) do
-      table.insert(lines, prefix .. " " .. line .. string.rep(" ", max_length - #line))
-    end
-    max_length = max_length + level + 1
-    local end_line = #lines
-    -- Highlight those lines
-    for i = start_line, end_line - 1 do
-      local hl = { group = HL_CODE_BLOCK, line = i, col_start = level, col_end = max_length }
-      table.insert(highlights, hl)
-    end
+    draw_code_block(bufnr, block.content, level, code_blocks)
   elseif block.type == block_types.block then
-    local i = #lines
+    local lines = { "" }
+    local start_line = vim.api.nvim_buf_line_count(bufnr)
+    -- Write title string
     local title_line = "  " .. string.rep("█", level) .. " " .. block.content.title
-    local hl = string.format("BaruaPresentH%d", level)
     table.insert(lines, title_line)
-    table.insert(highlights, { group = hl, line = i,  col_start = 2, col_end = #title_line })
+    vim.api.nvim_buf_set_lines(bufnr, -1, -1, true, lines)
+    highlight(bufnr, string.format("BaruaPresentH%d", level), start_line + 1, 2, #title_line)
+    -- Draw child blocks
     for _, child in ipairs(block.content.blocks) do
-      render_block(child, level + 1, lines, highlights)
+      draw_block(bufnr, child, level + 1, code_blocks)
     end
   else
     print("invalid block type: " .. block.type)
   end
 end
 
--- Construct a list of lines for the given slide
-local function render_slide(slide)
-  local lines, highlights = {}, {}
-  table.insert(lines, "")
-  table.insert(lines, "  █ " .. slide.title)
-  table.insert(highlights, { group = HL_H1, line = 1,  col_start = 2, col_end = #lines[2] })
-  -- Go over each block and render it
-  if slide.blocks ~= nil then
-    for _, block in ipairs(slide.blocks) do
-      render_block(block, 2, lines, highlights)
+-- Highlights all code blocks for a language.
+local function highlight_code_for_language(bufnr, language, ranges)
+  print(language)
+  vim.pretty_print(ranges)
+  if QUERIES[language] == nil then
+    print("Languge '" .. language .. "' not yet supported")
+    return
+  end
+  local parser = vim.treesitter.get_parser(bufnr, language)
+  vim.pretty_print(parser)
+  local query = vim.treesitter.parse_query(language, QUERIES[language])
+  parser:set_included_regions(ranges)
+  local trees = parser:parse()
+  for _, tree in ipairs(trees) do
+    local root = tree:root()
+    print(root:sexpr())
+    local start_row, _, end_row, _ = root:range()
+    for id, node in query:iter_captures(root, 0, start_row, end_row) do
+      local name = query.captures[id]
+      local group = TS_HL_GROUP[name]
+      if group ~= nil then
+        ts_utils.highlight_node(node, bufnr, NAMESPACE, group)
+      end
     end
   end
-  return lines, highlights
 end
 
 -- Given a slide definition, draw it in the provided buffer
 local function draw_slide(bufnr, slide)
-  local lines, highlights = render_slide(slide)
-  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, lines)
-  for _, hl in ipairs(highlights) do
-    --vim.pretty_print(hl)
-    vim.api.nvim_buf_add_highlight(bufnr, NAMESPACE, hl.group, hl.line, hl.col_start, hl.col_end)
+  local code_blocks = {}
+  local title_line = "  █ " .. slide.title
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, { "", title_line })
+  highlight(bufnr, HL_H1, 1, 2, #title_line)
+  -- Go over each block and draw it
+  if slide.blocks ~= nil then
+    for _, block in ipairs(slide.blocks) do
+      draw_block(bufnr, block, 2, code_blocks)
+    end
+  end
+  vim.pretty_print(code_blocks)
+  -- Highlight all code blocks
+  for language, ranges in pairs(code_blocks) do
+    highlight_code_for_language(bufnr, language, ranges)
   end
 end
 
@@ -117,13 +188,50 @@ local TEST_SLIDE = {
               language = "c",
               code = {
                 "#include <stdio.h>",
-                "",
-                "int main() {",
+                "struct Point { double x; double y; };",
+                "int main(int argc, char *const argv) {",
+                "  if (true) { printf(\"hello, world!\\n\"); }",
                 "  return 0;",
                 "}",
               }
             }
-          }
+          },
+          {
+            type = block_types.code,
+            content = {
+              language = "rust",
+              code = {
+                "use std::collections::HashMap;",
+                "trait Trait { }",
+                "struct Test {",
+                "  blah: HashMap<i32, Test>",
+                "}",
+                "impl Test {",
+                "  fn foo(&self) -> bool { true }",
+                "}",
+                "impl Trait for Test { }",
+                "fn main() {",
+                "  if (true) {",
+                "    println!(\"hello, world!\");",
+                "  }",
+                "}",
+              }
+            }
+          },
+          {
+            type = block_types.block,
+            content = {
+              title = "Sub sub block",
+              blocks = {
+                {
+                  type = block_types.paragraph,
+                  content = {
+                    "This is a sample paragraph",
+                  },
+                },
+              },
+            },
+          },
         }
       }
     }
@@ -138,6 +246,7 @@ local function testing()
   local laststatus = vim.o.laststatus
   -- Create a new unlisted scratch buffer
   local buffer = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_set_current_buf(buffer)
   -- Draw the slide in the test buffer
   draw_slide(buffer, TEST_SLIDE)
   -- Set a keybinding that restores the current buffer for the window
