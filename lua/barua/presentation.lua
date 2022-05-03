@@ -4,10 +4,27 @@ local NAMESPACE = vim.api.nvim_create_namespace("BaruaPresentation")
 
 local ts_utils = require('nvim-treesitter.ts_utils')
 
+
+--[[
+(translation_unit (preproc_include path: (system_lib_string)) (struct_specifier name: (type_identifier) body: (field_declaration_list (field_declaration type: (primitive_type) declarator: (field_identifier)) (field_declaration type: (primitive_type) declarator: (field_identifier)))) (function_definition type: (primitive_type) declarator: (function_declarator declarator: (identifier) parameters: (parameter_list (parameter_declaration type: (primitive_type) declarator: (identifier)) (parameter_declaration type: (primitive_type) declarator: (pointer_declarator (type_qualifier) declarator: (identifier))))) body: (compound_statement (if_statement condition: (parenthesized_expression (true)) consequence: (compound_statement (expression_statement (call_expression function: (identifier) arguments: (argument_list (string_literal (escape_sequence))))))) (return_statement (number_literal)))))
+
+(source_file (use_declaration argument: (scoped_identifier path: (scoped_identifier path: (identifier) name: (identifier)) name: (identifier))) (trait_item name: (type_identifier) body: (declaration_list)) (struct_item name: (type_identifier) body: (field_declaration_list (field_declaration name: (field_identifier) type: (generic_type type: (type_identifier) type_arguments: (type_arguments (primitive_type) (type_identifier)))))) (impl_item type: (type_identifier) body: (declaration_list (function_item name: (identifier) parameters: (parameters (self_parameter (self))) return_type: (primitive_type) body: (block (boolean_literal))))) (impl_item trait: (type_identifier) type: (type_identifier) body: (declaration_list)) (function_item name: (identifier) parameters: (parameters) body: (block (expression_statement (if_expression condition: (parenthesized_expression (boolean_literal)) consequence: (block (expression_statement (macro_invocation macro: (identifier) (token_tree (string_literal))))))))))
+]]
+
 local C_QUERY = [[
-(preproc_include) @include
 [(true) (false)] @boolean
 (comment) @comment
+(field_identifier) @field
+(preproc_include) @include
+[ "break" "continue" "do" "else" "for" "if" "return" "struct" "while" ] @keyword
+[ "(" ")" "{" "}" ";" "," ] @punctuation
+(type_identifier) @type
+(primitive_type) @type_builtin
+(function_declarator declarator: (identifier) @func)
+(call_expression function: (identifier) @func)
+(parameter_declaration declarator: (identifier) @parameter)
+(string_literal) @string
+(number_literal) @number
 ]]
 
 local RUST_QUERY = [[
@@ -20,9 +37,18 @@ local QUERIES = {
 
 -- capture -> highlight
 local TS_HL_GROUP = {
-  include = "TSInclude",
-  boolean = "TSBoolean",
-  comment = "TSComment",
+  boolean      = "TSBoolean",
+  comment      = "TSComment",
+  field        = "TSField",
+  func         = "TSFunction",
+  include      = "TSInclude",
+  keyword      = "TSKeyword",
+  number       = "TSNumber",
+  parameter    = "TSParameter",
+  punctuation  = "TSPuncDelimiter",
+  string       = "TSString",
+  type         = "TSType",
+  type_builtin = "TSTypeBuiltin",
 }
 
 -- Create highlights
@@ -71,6 +97,8 @@ local function draw_code_block(bufnr, content, level, code_blocks)
   local lines = { "" }
   local start_line = vim.api.nvim_buf_line_count(bufnr)
   local prefix = string.rep(" ", level + 1)
+  -- Concatenated code - will be used for highlighting
+  local concat = ""
   -- Calculate max line length of code
   local max_length = 0
   for _, line in ipairs(content.code) do
@@ -80,6 +108,7 @@ local function draw_code_block(bufnr, content, level, code_blocks)
   -- Write lines out padded with spaces
   for _, line in ipairs(content.code) do
     table.insert(lines, prefix .. line .. string.rep(" ", max_length - #line))
+    concat = concat .. "\n" .. line
   end
   max_length = max_length + level + 1
   -- Write those lines to the buffer
@@ -90,9 +119,11 @@ local function draw_code_block(bufnr, content, level, code_blocks)
   if code_blocks[content.language] == nil then
     code_blocks[content.language] = {}
   end
-  local start_byte = vim.fn.line2byte(start_line)
-  local end_byte = vim.fn.line2byte(end_line)
-  table.insert(code_blocks[content.language], {{ start_line, 0, start_byte, end_line, 0, end_byte }})
+  table.insert(code_blocks[content.language], {
+    start_line = start_line,
+    left_offset = level + 1,
+    code = concat,
+  })
   -- Highlight normally with lighter background
   for i = start_line, end_line - 1 do
     highlight(bufnr, HL_CODE_BLOCK, i, level, max_length)
@@ -123,27 +154,30 @@ local function draw_block(bufnr, block, level, code_blocks)
 end
 
 -- Highlights all code blocks for a language.
-local function highlight_code_for_language(bufnr, language, ranges)
-  print(language)
-  vim.pretty_print(ranges)
+local function highlight_code_for_language(bufnr, language, opts)
   if QUERIES[language] == nil then
     print("Languge '" .. language .. "' not yet supported")
     return
   end
-  local parser = vim.treesitter.get_parser(bufnr, language)
-  vim.pretty_print(parser)
-  local query = vim.treesitter.parse_query(language, QUERIES[language])
-  parser:set_included_regions(ranges)
-  local trees = parser:parse()
-  for _, tree in ipairs(trees) do
-    local root = tree:root()
-    print(root:sexpr())
-    local start_row, _, end_row, _ = root:range()
-    for id, node in query:iter_captures(root, 0, start_row, end_row) do
-      local name = query.captures[id]
-      local group = TS_HL_GROUP[name]
-      if group ~= nil then
-        ts_utils.highlight_node(node, bufnr, NAMESPACE, group)
+  for _, opt in ipairs(opts) do
+    local parser = vim.treesitter.get_string_parser(opt.code, language)
+    local query = vim.treesitter.parse_query(language, QUERIES[language])
+    local trees = parser:parse()
+    for _, tree in ipairs(trees) do
+      local root = tree:root()
+      print(root:sexpr())
+      local root_start_row, _, root_end_row, _ = root:range()
+      for id, node in query:iter_captures(root, 0, root_start_row, root_end_row) do
+        local name = query.captures[id]
+        local group = TS_HL_GROUP[name]
+        print(name .. " : " .. group)
+        if group ~= nil then
+          local start_row, start_col, _, end_col = node:range()
+          start_row = start_row + opt.start_line
+          start_col = start_col + opt.left_offset
+          end_col = end_col + opt.left_offset
+          highlight(bufnr, group, start_row, start_col, end_col)
+        end
       end
     end
   end
@@ -163,8 +197,8 @@ local function draw_slide(bufnr, slide)
   end
   vim.pretty_print(code_blocks)
   -- Highlight all code blocks
-  for language, ranges in pairs(code_blocks) do
-    highlight_code_for_language(bufnr, language, ranges)
+  for language, opts in pairs(code_blocks) do
+    highlight_code_for_language(bufnr, language, opts)
   end
 end
 
