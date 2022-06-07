@@ -12,8 +12,18 @@ return require('packer').startup(function(use)
   -- Install nvim-lspconfig for easy configuration of language servers
   use { 'neovim/nvim-lspconfig', requires = { 'hrsh7th/cmp-nvim-lsp' }}
 
+  -- Markdown preview
+  use({
+    "iamcco/markdown-preview.nvim",
+    run = function() vim.fn["mkdp#util#install"]() end,
+  })
+
+
   -- Ultisnips for snippets
   use 'SirVer/ultisnips'
+
+  -- Automatic pair completion
+  use 'windwp/nvim-autopairs'
 
   -- nvim-cmp for completion, though I'll try to write my own
   -- https://github.com/hrsh7th/nvim-cmp/
@@ -30,6 +40,15 @@ return require('packer').startup(function(use)
 
   -- norcalli/nvim-colorizer.lua for colors in buffers - helps when building themes
   use 'norcalli/nvim-colorizer.lua'
+
+  -- One-dark theme
+  use 'navarasu/onedark.nvim'
+
+  -- Lualine for statusline
+  use {
+    'nvim-lualine/lualine.nvim',
+    requires = { 'kyazdani42/nvim-web-devicons' }
+  }
 
   -- Telescope for fuzzy finding
   use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }

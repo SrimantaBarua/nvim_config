@@ -7,7 +7,15 @@ require('barua.telescope').configure()
 require('barua.keybindings').setup_default()
 
 -- Set color scheme
-require('barua.theme')
+require('onedark').setup { style = 'warmer' }
+require('onedark').load()
+
+-- Enable pair completion
+require('nvim-autopairs').setup{}
+
+-- Enable lualine
+require('lualine').setup { options = { theme = 'onedark' } }
+-- require('barua.theme')
 
 -- Configure norcalli's nvim-colorizer.lua
 require('colorizer').setup {
