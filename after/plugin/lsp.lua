@@ -23,9 +23,56 @@ local cmp_mappings = lsp.defaults.cmp_mappings({
     ['<S-Tab>'] = nil,
 })
 
--- lsp.set_preferences({
---     sign_icons = {}
--- })
+local kind_map = {
+    Text = ' ',
+    Method = ' ',
+    Function = ' ',
+    Constructor = ' ',
+    Field = 'ﰠ ',
+    Variable = ' ',
+    Class = 'ﴯ ',
+    Interface = ' ',
+    Module = ' ',
+    Property = 'ﰠ ',
+    Unit = '塞 ',
+    Value = ' ',
+    Enum = ' ',
+    Keyword = ' ',
+    Snippet = ' ',
+    Color = ' ',
+    File = ' ',
+    Reference = ' ',
+    Folder = ' ',
+    EnumMember = ' ',
+    Constant = ' ',
+    Struct = 'פּ ',
+    Event = ' ',
+    Operator = ' ',
+    TypeParameter = '<T> '
+}
+
+local menu_icon = {
+    nvim_lsp = 'λ ',
+    luasnip = '⋗ ',
+    buffer = 'Ω ',
+    path = '/ ',
+    nvim_lua = 'Π ',
+}
+
+lsp.setup_nvim_cmp({
+    formatting = {
+        fields = {'menu', 'abbr', 'kind'},
+
+        format = function(entry, item)
+            local kind = kind_map[item.kind]
+            if kind ~= nil then
+                item.kind = kind
+            end
+            item.menu = menu_icon[entry.source.name]
+            return item
+        end
+    }
+})
 
 lsp.on_attach(function(client, bufnr)
     local opts = { buffer = bufnr, remap = false }
@@ -41,6 +88,9 @@ lsp.on_attach(function(client, bufnr)
     vim.keymap.set("n", "<leader>lR", function() vim.lsp.buf.rename() end, opts)
     vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
 end)
+
+-- Configure lua language server for neovim
+lsp.nvim_workspace()
 
 lsp.setup()
 
