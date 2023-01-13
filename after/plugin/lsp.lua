@@ -71,6 +71,12 @@ lsp.setup_nvim_cmp({
             item.menu = menu_icon[entry.source.name]
             return item
         end
+    },
+    sources = {
+        { name = 'path' },
+        { name = 'nvim_lsp', keyword_length = 1 },
+        { name = 'buffer', keyword_length = 3 },
+        { name = 'luasnip', keyword_length = 2 },
     }
 })
 
