@@ -23,6 +23,13 @@ local cmp_mappings = lsp.defaults.cmp_mappings({
     ['<S-Tab>'] = nil,
 })
 
+-- Make nvim-autopairs work with cmp
+-- Source - https://github.com/windwp/nvim-autopairs
+cmp.event:on(
+    'confirm_done',
+    require('nvim-autopairs.completion.cmp').on_confirm_done()
+)
+
 local kind_map = {
     Text = ' ',
     Method = ' ',
@@ -81,18 +88,28 @@ lsp.setup_nvim_cmp({
 })
 
 lsp.on_attach(function(client, bufnr)
-    local opts = { buffer = bufnr, remap = false }
+    local wk = require('which-key')
 
-    vim.keymap.set("n", "<leader>ld", function() vim.lsp.buf.definition() end, opts)
-    vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
-    vim.keymap.set("n", "<leader>lws", function() vim.lsp.buf.workspace_symbol() end, opts)
-    vim.keymap.set("n", "<leader>lvd", function() vim.diagnostic.open_float() end, opts)
-    vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
-    vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
-    vim.keymap.set("n", "<leader>lva", function() vim.lsp.buf.code_action() end, opts)
-    vim.keymap.set("n", "<leader>lr", function() vim.lsp.buf.references() end, opts)
-    vim.keymap.set("n", "<leader>lR", function() vim.lsp.buf.rename() end, opts)
-    vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
+    wk.register({
+        ['<leader>l'] = {
+            name = 'lsp',
+            d = { vim.lsp.buf.definition, 'definition', buffer = bufnr },
+            D = {
+                name = 'diagnostic',
+                n = { vim.diagnostic.goto_next, 'next', buffer = bufnr },
+                o = { vim.diagnostic.open_float, 'open', buffer = bufnr },
+                p = { vim.diagnostic.goto_prev, 'previous', buffer = bufnr },
+            },
+            f = { vim.lsp.buf.format, 'format', buffer = bufnr },
+            r = { vim.lsp.buf.references, 'references', buffer = bufnr },
+            R = { vim.lsp.buf.rename, 'rename', buffer = bufnr },
+            ['ws'] = { vim.lsp.buf.workspace_symbol, 'workspace symbol', buffer = bufnr },
+            ['va'] = { vim.lsp.buf.code_action, 'code action', buffer = bufnr },
+            ['vd'] = { vim.diagnostic.open_float, 'diagnostics', buffer = bufnr },
+        },
+        ['K'] = { vim.lsp.buf.hover, 'lsp: hover', buffer = bufnr },
+        ['<C-h>'] = { vim.lsp.buf.signature_help, 'lsp: signature', buffer = bufnr },
+    })
 end)
 
 -- Configure lua language server for neovim

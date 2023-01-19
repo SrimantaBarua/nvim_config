@@ -1,7 +1,7 @@
 vim.opt.number = true
 vim.opt.relativenumber = true
 
-vim.opt.hlsearch = false
+vim.opt.hlsearch = true
 vim.opt.incsearch = true
 vim.opt.inccommand = "split"
 
@@ -23,7 +23,7 @@ vim.opt.wrap = false
 vim.opt.sidescrolloff = 2
 
 vim.opt.termguicolors = true
-vim.opt.signcolumn = "no"
+vim.opt.signcolumn = "yes"
 
 vim.opt.completeopt = "menu,menuone"
 vim.opt.hidden = true

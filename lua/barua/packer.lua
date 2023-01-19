@@ -40,4 +40,14 @@ return require('packer').startup(function(use)
             {'rafamadriz/friendly-snippets'},
         }
     }
+
+    use('folke/which-key.nvim')
+
+    use('mfussenegger/nvim-dap')
+    use('rcarriga/nvim-dap-ui')
+    use('theHamsta/nvim-dap-virtual-text')
+    use('nvim-telescope/telescope-dap.nvim')
+
+    use { 'kylechui/nvim-surround', config = function() require('nvim-surround').setup() end }
+    use { 'windwp/nvim-autopairs', config = function() require('nvim-autopairs').setup() end }
 end)
