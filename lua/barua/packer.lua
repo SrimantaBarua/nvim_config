@@ -42,6 +42,9 @@ return require('packer').startup(function(use)
         }
     }
 
+    -- Better LSP diagnostics
+    use('https://git.sr.ht/~whynothugo/lsp_lines.nvim')
+
     use('folke/which-key.nvim')
 
     use('mfussenegger/nvim-dap')

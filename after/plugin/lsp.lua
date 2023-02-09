@@ -121,6 +121,10 @@ lsp.nvim_workspace()
 
 lsp.setup()
 
+-- Set up lsp-lines
+require('lsp_lines').setup()
+
+-- Disable regular virtual text diagnostics since I have lsp-lines now
 vim.diagnostic.config({
-    virtual_text = true,
+    virtual_text = false,
 })
