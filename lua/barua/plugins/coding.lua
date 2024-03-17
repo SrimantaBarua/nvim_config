@@ -44,9 +44,5 @@ return {
                 input_buffer_type = "dressing"
             }
         end,
-        -- Incremental rename
-        vim.keymap.set("n", "<leader>lr", function()
-            return ":IncRename " .. vim.fn.expand("<cword>")
-        end, { expr = true })
     },
 }
