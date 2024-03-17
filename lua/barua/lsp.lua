@@ -53,9 +53,11 @@ end
 
 -- Configure LSP servers with nvim-lspconfig
 local function setup_lspconfig ()
+    local capabilities = require("cmp_nvim_lsp").default_capabilities()
     local lspconfig = require("lspconfig")
     for k, v in pairs(lsp_server_configurations) do
-        lspconfig[k].setup(v)
+        local opts = vim.tbl_extend("keep", v, { capabilities = capabilities })
+        lspconfig[k].setup(opts)
     end
 end
 
