@@ -10,11 +10,29 @@ return {
 
     -- Lightbulb to show available LSP code actions
     {
-        'kosayoda/nvim-lightbulb',
+        "kosayoda/nvim-lightbulb",
         config = function ()
             require("nvim-lightbulb").setup({
                 autocmd = { enabled = true }
             })
         end
+    },
+
+    -- Notification popups
+    {
+        "rcarriga/nvim-notify",
+        config = function ()
+            vim.notify = require("notify")
+            require("notify").setup {
+                render = "compact",
+                stages = "slide",
+            }
+        end
+    },
+
+    -- Override vim.ui hooks
+    {
+        'stevearc/dressing.nvim',
+        opts = {},
     }
 }

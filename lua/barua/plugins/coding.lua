@@ -49,10 +49,4 @@ return {
             return ":IncRename " .. vim.fn.expand("<cword>")
         end, { expr = true })
     },
-
-    -- Override vim.ui hooks
-    {
-        'stevearc/dressing.nvim',
-        opts = {},
-    }
 }
