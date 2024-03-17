@@ -1,3 +1,4 @@
+-- Default neovim options
 vim.opt.hlsearch      = true       -- Keep search results highlighted
 vim.opt.incsearch     = true       -- Incremental search
 vim.opt.inccommand    = "nosplit"  -- Incremental commands show results in the buffer
@@ -5,7 +6,7 @@ vim.opt.expandtab     = true       -- Use spaces for indentation
 vim.opt.shiftwidth    = 4          -- Indent with 4 spaces
 vim.opt.softtabstop   = 4          -- Inserting a tab looks like 4 spaces
 vim.opt.tabstop       = 8          -- A tab is 8 spaces (default)
-vim.opt.autoindent    = true       -- Coyp indent from current line when starting a new line
+vim.opt.autoindent    = true       -- Copy indent from current line when starting a new line
 vim.opt.smartindent   = true       -- Smart indent for C-like languages
 vim.opt.swapfile      = false
 vim.opt.backup        = false
