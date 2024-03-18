@@ -14,6 +14,13 @@ return {
         end
     },
 
+    -- Automatic pair completion
+    {
+        "windwp/nvim-autopairs",
+        event = "InsertEnter",
+        opts = {}
+    },
+
     -- Mason to manage installations of LSP servers
     "williamboman/mason.nvim",
     "williamboman/mason-lspconfig.nvim",
