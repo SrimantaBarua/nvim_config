@@ -1,4 +1,5 @@
 return {
+    -- Magit-like experience inside neovim
     {
         "NeogitOrg/neogit",
         dependencies = {
@@ -6,6 +7,14 @@ return {
             "sindrets/diffview.nvim",
             "nvim-telescope/telescope.nvim",
         },
-        config = true
+        opts = {}
+    },
+
+    -- Git signs, plus blame
+    {
+        "lewis6991/gitsigns.nvim",
+        opts = {
+            current_line_blame = true
+        }
     }
 }
