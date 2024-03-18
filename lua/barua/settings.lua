@@ -18,3 +18,5 @@ vim.opt.joinspaces    = false
 vim.opt.termguicolors = true       -- Enable 24-bit RGB color
 vim.opt.cursorline    = true
 vim.opt.colorcolumn   = "100"
+vim.opt.number        = true
+vim.opt.signcolumn    = "yes:1"

@@ -28,6 +28,36 @@ vim.keymap.set("n", "<leader>fg", telescope_builtin.live_grep, { desc = "Live gr
 
 vim.keymap.set("n", "<leader>fh", telescope_builtin.help_tags, { desc = "Search help tags" })
 
+vim.keymap.set("n", "<leader>fm", telescope_builtin.marks, { desc = "Search marks" })
+
+vim.keymap.set("n", "<leader>fr", telescope_builtin.registers, { desc = "Search registers" })
+
+
+--[[
+    Quickfix list
+]]
+
+vim.keymap.set("n", "[q", "<cmd>cprevious<cr>", { desc = "Previous item in quickfix list" })
+
+vim.keymap.set("n", "]q", "<cmd>cnext<cr>", { desc = "Next item in quickfix list" })
+
+vim.keymap.set("n", "<leader>qo", "<cmd>copen<cr>", { desc = "Open the quickfix window" })
+
+vim.keymap.set("n", "<leader>qc", "<cmd>cclose<cr>", { desc = "Close the quickfix window" })
+
+
+--[[
+    Diagnostics (with trouble)
+]]
+
+vim.keymap.set("n", "<leader>dd", function ()
+    require("trouble").toggle("document_diagnostics")
+end, { desc = "Toggle document diagnostics" })
+
+vim.keymap.set("n", "<leader>dw", function ()
+    require("trouble").toggle("workspace_diagnostics")
+end, { desc = "Toggle workspace diagnostics" })
+
 
 --[[
     LSP keybindings
