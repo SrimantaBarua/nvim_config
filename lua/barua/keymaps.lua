@@ -47,6 +47,13 @@ vim.keymap.set("n", "<leader>qc", "<cmd>cclose<cr>", { desc = "Close the quickfi
 
 
 --[[
+    Git
+]]
+
+vim.keymap.set("n", "<leader>g", "<cmd>Neogit<cr>", { desc = "Open Neogit" })
+
+
+--[[
     Diagnostics (with trouble)
 ]]
 
