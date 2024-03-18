@@ -51,12 +51,29 @@ local function setup_mason ()
     }
 end
 
+-- Callback to run on attaching LSP to a buffer
+local autoformat_augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+local function on_lsp_attach (client, bufnr)
+    -- Format before save
+    if client.supports_method("textDocument/formatting") then
+        vim.api.nvim_clear_autocmds({ group = autoformat_augroup, buffer = bufnr })
+        vim.api.nvim_create_autocmd("BufWritePre", {
+            group = autoformat_augroup,
+            buffer = bufnr,
+            callback = function() vim.lsp.buf.format() end,
+        })
+    end
+end
+
 -- Configure LSP servers with nvim-lspconfig
 local function setup_lspconfig ()
     local capabilities = require("cmp_nvim_lsp").default_capabilities()
     local lspconfig = require("lspconfig")
     for k, v in pairs(lsp_server_configurations) do
-        local opts = vim.tbl_extend("keep", v, { capabilities = capabilities })
+        local opts = vim.tbl_extend("keep", v, {
+            capabilities = capabilities,
+            on_attach = on_lsp_attach
+        })
         lspconfig[k].setup(opts)
     end
 end
